@@ -1,11 +1,11 @@
 #include "main.h"
+#include "config.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "liblvgl/llemu.hpp"
 #include "pros/misc.h"
 #include "pros/rtos.hpp"
 #include <sys/_intsup.h>
 #include <sys/types.h>
-#include "config.h"
 
 bool isRed = false;
 bool hasExtraMogo = false;
@@ -61,7 +61,6 @@ void autonomous() {
   } else if (!isRed && hasExtraMogo) {
 
   } else if (!isRed && !hasExtraMogo) {
-
   }
 }
 
@@ -77,10 +76,8 @@ void opcontrol() {
         controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1);
     int isL2Pressed =
         controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2);
-    int isR1Pressed =
-        controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
-    int isR2Pressed =
-        controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
+    int isR1Pressed = controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+    int isR2Pressed = controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
 
     // when pressed, reverse the direction of the drive
     if (isL2Pressed) {
@@ -94,7 +91,7 @@ void opcontrol() {
 
     // toggle the mobile clamp when pressedd
     if (isL1Pressed)
-    
+
       mogoClamp.toggle();
 
     // move lift and intake at full speed when btn pressed
