@@ -23,11 +23,11 @@ lemlib::Drivetrain
                &right_mg,                  // right motor group
                13,                         // 13 inch track width
                lemlib::Omniwheel::OLD_325, // using old 3.25" omnis
-               450,                        // drivetrain rpm is 360
+               450,                        // drivetrain rpm is 450
                2                           // horizontal drift is 2 (for now)
     );
 
-// create an imu on port 10
+// create the imu
 pros::Imu imu(20);
 
 // horizontal tracking wheel encoder
@@ -133,9 +133,9 @@ void competition_initialize() {}
 void autonomous() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
 
-  //TODO
+  // TODO
   if (isRed && hasExtraMogo) {
-    
+
   } else if (isRed && !hasExtraMogo) {
 
   } else if (!isRed && hasExtraMogo) {
@@ -147,8 +147,6 @@ void autonomous() {
 void opcontrol() {
   bool isReversed = false;
 
-  int btnLimit = 100; //Minimum time to wait for next btn press
-  int L2Count = btnLimit; //setting the minimum so it can be used immediately
   while (true) {
     // get left y and right x positions from controller
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
@@ -158,15 +156,14 @@ void opcontrol() {
         controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1);
     int isL2Pressed =
         controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2);
-    int isR2Pressed =
-        controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2) ? 1 : -1;
     int isR1Pressed =
-        controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
+        controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+    int isR2Pressed =
+        controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
 
-    //when pressed, reverse the direction of the drive
-    if (isL2Pressed && L2Count >= btnLimit) {
+    // when pressed, reverse the direction of the drive
+    if (isL2Pressed) {
       isReversed = !isReversed;
-      L2Count = 0;
     }
 
     if (!isReversed)
@@ -174,15 +171,12 @@ void opcontrol() {
     else
       chassis.tank(-rightY, -leftY);
 
-    //toggle the mobile clamp when pressedd
+    // toggle the mobile clamp when pressedd
     if (isL1Pressed)
       mogoClamp.toggle();
 
-    //move lift and intake at full speed when btn pressed
-    if (isR2Pressed) 
-      lift_motor.move(127 * isR2Pressed * isR1Pressed);
-
+    // move lift and intake at full speed when btn pressed
+    lift_motor.move(127 * (isR2Pressed - isR1Pressed));
     pros::delay(20); // Run for 20 ms then update
-    L2Count += 20;
   }
 }
