@@ -7,11 +7,11 @@
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
-#include "pros/optical.h"
 #include "pros/rtos.hpp"
+#include <sys/_intsup.h>
 #include <sys/types.h>
 
-pros::Controller master(pros::E_CONTROLLER_MASTER);
+pros::Controller controller(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup
     left_mg({-1, -2, -3},
             pros::MotorGearset::blue); // Creates a motor group with forwards
@@ -133,107 +133,54 @@ void competition_initialize() {}
 void autonomous() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
 
-  if (isRed) {
-    chassis.setPose(135, 20, 180);
-    chassis.moveToPoint(135, 50, 3000, {.forwards = false, .maxSpeed = 50},
-                        true);
-    chassis.moveToPose(120, 64, 180, 3000, {.forwards = false}, true);
+  //TODO
+  if (isRed && hasExtraMogo) {
+    
+  } else if (isRed && !hasExtraMogo) {
 
-    bool hasExtended = false;
-    while (true) {
-      if (!chassis.isInMotion() && !hasExtended) {
-        mogoClamp.extend();
-        hasExtended = true;
+  } else if (!isRed && hasExtraMogo) {
 
-        pros::delay(500);
-        lift_motor.move(127);
-        pros::delay(500);
-        intake_motor.move(127);
-
-        chassis.moveToPose(136, 7, 135, 5000);
-
-        pros::delay(5000);
-        intake_motor.brake();
-        lift_motor.brake();
-      }
-
-      pros::delay(20);
-    }
-  } else {
-    //BLUE SIDE MUST BE ON LEFT
-    chassis.setPose(9, 20, 180);
-    chassis.moveToPoint(9, 45, 3000, {.forwards = false, .maxSpeed = 100},
-                        false);
-    chassis.moveToPose(22, 66, 180, 3000, {.forwards = false}, false);
-
-    bool hasExtended = false;
-    while (true) {
-      if (!chassis.isInMotion() && !hasExtended) {
-        mogoClamp.extend();
-        hasExtended = true;
-
-        pros::delay(500);
-        lift_motor.move(127);
-        pros::delay(500);
-        intake_motor.move(127);
-        pros::delay(1000);
-
-        intake_motor.brake();
-
-        chassis.moveToPose(8, 15, 225, 5000);
-
-        pros::delay(5000);
-        intake_motor.brake();
-        lift_motor.brake();
-      }
-
-      pros::delay(20);
-    }
+  } else if (!isRed && !hasExtraMogo) {
   }
 }
 
 void opcontrol() {
   bool isReversed = false;
 
-  int btnLimit = 100;
-  int L2Count = btnLimit;
+  int btnLimit = 100; //Minimum time to wait for next btn press
+  int L2Count = btnLimit; //setting the minimum so it can be used immediately
   while (true) {
-    // get left y and right x positions
-    int leftY = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-    int rightY = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+    // get left y and right x positions from controller
+    int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+    int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+
+    int isL1Pressed =
+        controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1);
+    int isL2Pressed =
+        controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2);
+    int isR2Pressed =
+        controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2) ? 1 : -1;
+    int isR1Pressed =
+        controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
+
+    //when pressed, reverse the direction of the drive
+    if (isL2Pressed && L2Count >= btnLimit) {
+      isReversed = !isReversed;
+      L2Count = 0;
+    }
 
     if (!isReversed)
       chassis.tank(leftY, rightY);
     else
       chassis.tank(-rightY, -leftY);
 
-    if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2) &&
-        L2Count >= btnLimit) {
-      isReversed = !isReversed;
-      L2Count = 0;
-    }
-
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A) &&
-        master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
-      elevation_motor.move(-127);
-    }
-
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-      intake_motor.move(127);
-      lift_motor.move(127);
-    } else {
-      intake_motor.move(0);
-      lift_motor.move(0);
-    }
-
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-      intake_motor.move(-127);
-      lift_motor.move(-127);
-    }
-
-    if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
+    //toggle the mobile clamp when pressedd
+    if (isL1Pressed)
       mogoClamp.toggle();
-    }
+
+    //move lift and intake at full speed when btn pressed
+    if (isR2Pressed) 
+      lift_motor.move(127 * isR2Pressed * isR1Pressed);
 
     pros::delay(20); // Run for 20 ms then update
     L2Count += 20;
