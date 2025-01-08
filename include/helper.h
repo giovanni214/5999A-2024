@@ -12,5 +12,6 @@ void hslToRGB(float h, float s, float l, float& r, float& g, float& b);
 //Gives ring color (Red or Blue)
 int getRingColor(pros::Optical& optical_sensor);
 
+float centiToDegrees(int centidegrees);
 
 #endif

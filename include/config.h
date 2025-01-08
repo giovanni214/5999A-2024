@@ -3,6 +3,7 @@
 
 #include "lemlib/chassis/chassis.hpp"
 #include "pros/misc.hpp"
+#include "pros/optical.hpp"
 
 extern pros::Controller controller;
 extern lemlib::Chassis chassis;
@@ -10,6 +11,8 @@ extern lemlib::Chassis chassis;
 //the stuff I actually care about
 extern pros::adi::Pneumatics mogoClamp;
 extern pros::Motor lift_motor;
-
+extern pros::Rotation ladyBrownRotation;
+extern pros::Motor ladyBrownMotor;
+extern pros::Optical optical_sensor;
 
 #endif // CONFIG_H

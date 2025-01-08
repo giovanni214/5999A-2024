@@ -1,8 +1,11 @@
 #include "main.h"
 #include "config.h"
+#include "helper.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "liblvgl/llemu.hpp"
+#include "pros/llemu.hpp"
 #include "pros/misc.h"
+#include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include <sys/_intsup.h>
 #include <sys/types.h>
@@ -22,6 +25,12 @@ void initialize() {
   pros::lcd::register_btn0_cb(switchTeams);
   pros::lcd::register_btn1_cb(switchSide);
 
+  optical_sensor.set_led_pwm(100);
+
+  ladyBrownRotation.set_data_rate(5);
+  ladyBrownRotation.set_reversed(true);
+  ladyBrownRotation.reset_position();
+
   // print position to brain screen
   pros::Task screen_task([&]() {
     while (true) {
@@ -31,14 +40,17 @@ void initialize() {
       pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
 
       if (isRed)
-        pros::lcd::print(3, "Team Color: RED SIDE");
+        pros::lcd::print(3, "RED SIDE");
       else
-        pros::lcd::print(3, "Team Color: BLUE SIDE");
+        pros::lcd::print(3, "BLUE SIDE");
 
       if (hasExtraMogo)
         pros::lcd::print(4, "On Extra Mogo Side");
       else
         pros::lcd::print(4, "NOT On Extra Mogo Side");
+
+      pros::lcd::print(6, "Angle: %f",
+                       centiToDegrees(ladyBrownRotation.get_position()));
 
       // delay to save resources
       pros::delay(20);
@@ -64,8 +76,11 @@ void autonomous() {
   }
 }
 
+float getAngle() { return centiToDegrees(ladyBrownRotation.get_position()); }
+
 void opcontrol() {
   bool isReversed = false;
+  ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
   while (true) {
     // get left y and right x positions from controller
@@ -91,8 +106,40 @@ void opcontrol() {
 
     // toggle the mobile clamp when pressedd
     if (isL1Pressed)
-
       mogoClamp.toggle();
+
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+      ladyBrownMotor.move(30);
+      while (getAngle() <= 47) {
+        pros::delay(5);
+      }
+
+      ladyBrownMotor.brake();
+    }
+
+    if (getRingColor(optical_sensor) > -1 && getAngle() >= 47) {
+      ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+      while (getAngle() < 140) {
+        ladyBrownMotor.move(60);
+        pros::delay(50);
+      }
+
+      ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+      lift_motor.brake();
+      ladyBrownMotor.brake();
+    }
+
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+      ladyBrownMotor.move(30);
+    } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+      ladyBrownMotor.move(-20);
+    }
+
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+      ladyBrownMotor.move(-70);
+      pros::delay(1000);
+      ladyBrownRotation.reset_position();
+    }
 
     // move lift and intake at full speed when btn pressed
     lift_motor.move(127 * (isR2Pressed - isR1Pressed));

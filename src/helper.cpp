@@ -44,6 +44,10 @@ int getRingColor(pros::Optical& optical_sensor) {
   else return -1;
 }
 
+float centiToDegrees(int centidegrees) {
+  return (float) centidegrees / 100;
+}
+
 /*
 optical_sensor.set_led_pwm(100);
   

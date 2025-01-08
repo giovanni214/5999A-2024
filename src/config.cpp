@@ -1,6 +1,9 @@
 #include "lemlib/chassis/chassis.hpp"
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
+#include "pros/motors.hpp"
+#include "pros/optical.hpp"
+#include "pros/rotation.hpp"
 
 //Defines controller
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
@@ -79,3 +82,6 @@ lemlib::Chassis chassis(drivetrain,         // drivetrain settings
 
 pros::adi::Pneumatics mogoClamp('H', false);
 pros::Motor lift_motor(7, pros::v5::MotorGears::blue);
+pros::Rotation ladyBrownRotation(21);
+pros::Motor ladyBrownMotor(-10);
+pros::Optical optical_sensor(6);
