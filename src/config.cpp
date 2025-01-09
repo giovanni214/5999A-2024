@@ -81,7 +81,7 @@ lemlib::Chassis chassis(drivetrain,         // drivetrain settings
 );
 
 pros::adi::Pneumatics mogoClamp('H', false);
-pros::Motor lift_motor(7, pros::v5::MotorGears::blue);
+pros::Motor lift_motor(-7, pros::v5::MotorGears::blue);
 pros::Rotation ladyBrownRotation(21);
-pros::Motor ladyBrownMotor(-10);
+pros::Motor ladyBrownMotor(-10, pros::MotorGearset::red);
 pros::Optical optical_sensor(6);

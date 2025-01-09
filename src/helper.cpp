@@ -40,7 +40,7 @@ int getRingColor(pros::Optical& optical_sensor) {
   hslToRgb(hue, saturation, 0.5, r, g, b);
 
   if(r > 200) return 0; //red
-  else if(b > 180) return 1; //blue
+  else if(b > 150) return 1; //blue
   else return -1;
 }
 

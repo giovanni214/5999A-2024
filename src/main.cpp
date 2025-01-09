@@ -52,6 +52,8 @@ void initialize() {
       pros::lcd::print(6, "Angle: %f",
                        centiToDegrees(ladyBrownRotation.get_position()));
 
+      pros::lcd::print(7, "Color %d", getRingColor(optical_sensor));
+
       // delay to save resources
       pros::delay(20);
     }
@@ -110,29 +112,41 @@ void opcontrol() {
 
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
       ladyBrownMotor.move(30);
-      while (getAngle() <= 47) {
+      while (getAngle() <= 48) {
         pros::delay(5);
       }
 
       ladyBrownMotor.brake();
     }
 
+    lift_motor.move(127 * (isR2Pressed - isR1Pressed));
+
     if (getRingColor(optical_sensor) > -1 && getAngle() >= 47) {
-      ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-      while (getAngle() < 140) {
-        ladyBrownMotor.move(60);
+      // ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+
+      for (int i = 0; i < 3; i++) {
+        lift_motor.move(127);
+        pros::delay(250);
+        lift_motor.brake();
+        pros::delay(100);
+        lift_motor.move(127);
+      }
+
+      while (getAngle() < 130) {
+        ladyBrownMotor.move(80);
         pros::delay(50);
       }
 
       ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-      lift_motor.brake();
       ladyBrownMotor.brake();
     }
 
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
-      ladyBrownMotor.move(30);
+      ladyBrownMotor.move(80);
     } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-      ladyBrownMotor.move(-20);
+      ladyBrownMotor.move(-10);
+    } else {
+      ladyBrownMotor.brake();
     }
 
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
@@ -142,7 +156,6 @@ void opcontrol() {
     }
 
     // move lift and intake at full speed when btn pressed
-    lift_motor.move(127 * (isR2Pressed - isR1Pressed));
     pros::delay(20); // Run for 20 ms then update
   }
 }
