@@ -10,7 +10,7 @@
 #include <sys/_intsup.h>
 #include <sys/types.h>
 
-bool isRed = false;
+bool isRed = true;
 bool hasExtraMogo = false;
 
 void switchTeams() { isRed = !isRed; }
@@ -49,15 +49,27 @@ void initialize() {
       else
         pros::lcd::print(4, "NOT On Extra Mogo Side");
 
-      pros::lcd::print(6, "Angle: %f",
-                       centiToDegrees(ladyBrownRotation.get_position()));
-
-      pros::lcd::print(7, "Color %d", getRingColor(optical_sensor));
+      pros::lcd::print(5, "Color %f", getRingColor(optical_sensor));
 
       // delay to save resources
       pros::delay(20);
     }
   });
+
+  // pros::Task ringSorter([]() {
+  //   while (true) {
+  //     int color = getRingColor(optical_sensor);
+  //     if (color == 1) {
+  //     pros:
+  //       pros::c::delay(70);
+  //       lift_motor.brake();
+  //       pros::delay(1000);
+  //       lift_motor.move(127);
+  //     }
+
+  //     pros::delay(20);
+  //   }
+  // });
 }
 
 void disabled() {}
@@ -71,7 +83,7 @@ void autonomous() {
   if (isRed && hasExtraMogo) {
 
   } else if (isRed && !hasExtraMogo) {
-
+    // Do first. Move forward, put lady brown to score, then grab mogo
   } else if (!isRed && hasExtraMogo) {
 
   } else if (!isRed && !hasExtraMogo) {
@@ -121,36 +133,16 @@ void opcontrol() {
 
     lift_motor.move(127 * (isR2Pressed - isR1Pressed));
 
-    if (getRingColor(optical_sensor) > -1 && getAngle() >= 47) {
-      // ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-
-      for (int i = 0; i < 3; i++) {
-        lift_motor.move(127);
-        pros::delay(250);
-        lift_motor.brake();
-        pros::delay(100);
-        lift_motor.move(127);
-      }
-
-      while (getAngle() < 130) {
-        ladyBrownMotor.move(80);
-        pros::delay(50);
-      }
-
-      ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-      ladyBrownMotor.brake();
-    }
-
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
       ladyBrownMotor.move(80);
     } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-      ladyBrownMotor.move(-10);
+      ladyBrownMotor.move(-30);
     } else {
       ladyBrownMotor.brake();
     }
 
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-      ladyBrownMotor.move(-70);
+      ladyBrownMotor.move(-127);
       pros::delay(1000);
       ladyBrownRotation.reset_position();
     }
