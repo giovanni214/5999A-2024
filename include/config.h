@@ -10,9 +10,12 @@ extern lemlib::Chassis chassis;
 
 //the stuff I actually care about
 extern pros::adi::Pneumatics mogoClamp;
+extern pros::adi::Pneumatics doinker;
 extern pros::Motor lift_motor;
 extern pros::Rotation ladyBrownRotation;
 extern pros::Motor ladyBrownMotor;
 extern pros::Optical optical_sensor;
+
+
 
 #endif // CONFIG_H

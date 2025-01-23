@@ -1,15 +1,16 @@
 #include "lemlib/chassis/chassis.hpp"
+#include "pros/adi.hpp"
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
 #include "pros/motors.hpp"
 #include "pros/optical.hpp"
 #include "pros/rotation.hpp"
 
-//Defines controller
+// Defines controller
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // Creates a motor group with forwards
-pros::MotorGroup left_mg({-1, -2, -3}, pros::MotorGearset::blue); 
+pros::MotorGroup left_mg({-1, -2, -3}, pros::MotorGearset::blue);
 pros::MotorGroup right_mg({11, 12, 13}, pros::MotorGearset::blue);
 
 // drivetrain settings
@@ -23,7 +24,7 @@ lemlib::Drivetrain
     );
 
 // create the imu
-pros::Imu imu(19);
+pros::Imu imu(16);
 
 // horizontal tracking wheel encoder
 pros::adi::Encoder horizontal_encoder('A', 'B');
@@ -38,12 +39,13 @@ lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder,
 lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder,
                                               lemlib::Omniwheel::NEW_275, 2);
 
-//setup the full tracking sensors
+// setup the full tracking sensors
 lemlib::OdomSensors sensors(
     &vertical_tracking_wheel, // vertical tracking wheel 1, set to null
     nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
     &horizontal_tracking_wheel, // horizontal tracking wheel 1
-    nullptr, // horizontal tracking wheel 2, set to nullptr as there isn't anither
+    nullptr, // horizontal tracking wheel 2, set to nullptr as there isn't
+             // anither
     &imu     // inertial sensor
 );
 
@@ -54,8 +56,8 @@ lemlib::ControllerSettings
                        3,   // derivative gain (kD)
                        3,   // anti windup
                        1,   // small error range, in inches
-                       1, // small error range timeout, in milliseconds
-                       100,   // large error range, in inches
+                       1,   // small error range timeout, in milliseconds
+                       100, // large error range, in inches
                        500, // large error range timeout, in milliseconds
                        20   // maximum acceleration (slew)
     );
@@ -64,7 +66,7 @@ lemlib::ControllerSettings
 lemlib::ControllerSettings
     angular_controller(2,   // proportional gain (kP)
                        0,   // integral gain (kI)
-                      10,  // derivative gain (kD)
+                       10,  // derivative gain (kD)
                        3,   // anti windup
                        1,   // small error range, in degrees
                        100, // small error range timeout, in milliseconds
@@ -80,7 +82,8 @@ lemlib::Chassis chassis(drivetrain,         // drivetrain settings
                         sensors             // odometry sensors
 );
 
-pros::adi::Pneumatics mogoClamp('H', false);
+pros::adi::Pneumatics mogoClamp('H', true);
+pros::adi::Pneumatics doinker('F', false);
 pros::Motor lift_motor(-7, pros::v5::MotorGears::blue);
 pros::Rotation ladyBrownRotation(21);
 pros::Motor ladyBrownMotor(-10, pros::MotorGearset::red);

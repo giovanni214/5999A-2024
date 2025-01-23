@@ -40,6 +40,7 @@ void initialize() {
 
   // print position to brain screen
   pros::Task screen_task([&]() {
+    int vibrations = 0;
     while (true) {
       // print robot location to the brain screen
       pros::lcd::print(0, "X: %f", chassis.getPose().x);         // x
@@ -56,8 +57,9 @@ void initialize() {
       pros::lcd::print(5, "Angle %f", getAngle());
 
       pros::lcd::print(6, "TEMP: %f", lift_motor.get_temperature());
-      if (lift_motor.get_temperature() > 40) {
+      if (lift_motor.get_temperature() > 40 && vibrations < 10) {
         controller.rumble(".");
+        vibrations++;
       }
 
       // delay to save resources
@@ -70,14 +72,90 @@ void disabled() {}
 
 void competition_initialize() {}
 
+void resetLadyBrown() {
+  ladyBrownMotor.move(-127);
+  pros::delay(1000);
+  ladyBrownMotor.brake();
+  ladyBrownRotation.reset_position();
+}
+
+void goToAngle(float angle) {
+  ladyBrownMotor.move(160);
+  while (getAngle() < angle) {
+    pros::delay(5);
+  }
+
+  ladyBrownMotor.brake();
+}
+
+void autonSkills() {
+  ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  goToAngle(210);
+  resetLadyBrown();
+
+  // facing the alliance stake, (0, 0) is center
+  chassis.setPose(0, -60, 180);
+
+  // grab mogo
+  chassis.moveToPose(
+      -20, -52, 90, 10000,
+      {.forwards = false, .lead = 0.8, .minSpeed = 50, .earlyExitRange = 1},
+      false);
+
+  pros::delay(1000);
+
+  chassis.moveToPose(-36, -50, 90, 3000, {.forwards = false, .minSpeed = 80},
+                     false);
+  mogoClamp.retract();
+
+  // Grab first ring
+  lift_motor.move(127);
+  chassis.moveToPose(-24, -28, 0, 2000, {}, false);
+
+  // Grab second ring
+  chassis.moveToPose(-48, -24, -90, 3000, {}, false);
+
+  // Third and fouth ring
+  chassis.moveToPose(-48, -50, 180, 5000, {.maxSpeed = 40}, false);
+  pros::delay(2000);
+  chassis.moveToPoint(-48, -55, 1000);
+
+  // back up and grab final ring
+  chassis.moveToPose(-48, -24, 180, 3000, {.forwards = false}, false);
+  pros::delay(1000);
+  chassis.moveToPose(-60, -48, 180, 3000, {}, false);
+
+  //drop mobile goal off in corner
+  chassis.moveToPose(-65, -65, 45, 3000, {.forwards = false}, false);
+  mogoClamp.extend();
+
+  // back up, slam into wall and reset X
+  chassis.moveToPoint(-48, -48, 3000, {}, false);
+  chassis.moveToPose(-1000, -48, 90, 2000, {.forwards = false}, false);
+  chassis.setPose(-62, chassis.getPose().y, 90);
+
+  pros::delay(1000);
+
+  // // stop, slam into wall to reset y
+  // chassis.moveToPose(-24, -55, -90, 5000, {.forwards = false}, false);
+  // chassis.moveToPose(-24, -1000, 180, 5000, {}, false);
+  // chassis.setPose(chassis.getPose().x, -62, 90);
+
+  //go back and try to grab mogo
+  chassis.moveToPose(-24, -48, -90, 5000, {.forwards = false}, false);
+  chassis.moveToPose(0, -48, -90, 5000, {.forwards = false}, false);
+  chassis.moveToPose(24, -48, -90, 5000, {.forwards = false}, false);
+  mogoClamp.retract();
+}
+
 void autonomous() {
+  ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
-  chassis.setPose(0, 0, 0);
 
   // TODO
 
   if (isSkills) {
-
+    autonSkills();
   } else if (isRed && hasExtraMogo) {
 
   } else if (isRed && !hasExtraMogo) {
@@ -89,8 +167,8 @@ void autonomous() {
 }
 
 void opcontrol() {
-  bool isReversed = false;
   ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  bool isReversed = false;
 
   bool isArmingLadyBrown = false;
   int rejectBlueRingCount = 0;
@@ -124,18 +202,8 @@ void opcontrol() {
     if (isL1Pressed)
       mogoClamp.toggle();
 
-    if (isAPressed)
-      isArmingLadyBrown = true;
-
-    if (isArmingLadyBrown) {
-      // Angle varies, need to add mini angle adjustor
-      if (getAngle() <= 58)
-        ladyBrownMotor.move(30);
-      else {
-        ladyBrownMotor.brake();
-        isArmingLadyBrown = false;
-      }
-    }
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y))
+      doinker.toggle();
 
     // move lift based off of right triggers
     lift_motor.move(127 * (isR2Pressed - isR1Pressed));
@@ -147,6 +215,19 @@ void opcontrol() {
       ladyBrownMotor.move(-30);
     } else {
       ladyBrownMotor.brake();
+    }
+
+    if (isAPressed)
+      isArmingLadyBrown = true;
+
+    if (isArmingLadyBrown) {
+      // Angle varies, need to add mini angle adjustor
+      if (getAngle() <= 57)
+        ladyBrownMotor.move(30);
+      else {
+        ladyBrownMotor.brake();
+        isArmingLadyBrown = false;
+      }
     }
 
     // quick, dirty way to reset Lady Brown
