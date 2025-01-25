@@ -10,7 +10,7 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // Creates a motor group with forwards
-pros::MotorGroup left_mg({-1, -2, -3}, pros::MotorGearset::blue);
+pros::MotorGroup left_mg({-1, -4, -3}, pros::MotorGearset::blue);
 pros::MotorGroup right_mg({11, 12, 13}, pros::MotorGearset::blue);
 
 // drivetrain settings

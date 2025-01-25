@@ -127,7 +127,7 @@ void autonSkills() {
   chassis.moveToPose(-60, -48, 180, 3000, {}, false);
 
   pros::delay(1000);
-  //drop mobile goal off in corner
+  // drop mobile goal off in corner
   chassis.moveToPose(-65, -65, 45, 3000, {.forwards = false}, false);
   mogoClamp.extend();
   lift_motor.brake();
@@ -142,9 +142,9 @@ void autonSkills() {
   // // stop, slam into wall to reset y
   // chassis.moveToPose(-24, -55, -90, 5000, {.forwards = false}, false);
   // chassis.moveToPose(-24, -1000, 180, 5000, {}, false);
-  chassis.setPose(chassis.getPose().x+2, chassis.getPose().y -4, 90);
+  chassis.setPose(chassis.getPose().x + 2, chassis.getPose().y - 4, 90);
 
-  //go back and try to grab mogo
+  // go back and try to grab mogo
   chassis.moveToPose(-24, -48, -90, 5000, {.forwards = false}, false);
   chassis.moveToPose(0, -48, -90, 5000, {.forwards = false}, false);
   chassis.moveToPose(24, -48, -90, 2000, {.forwards = false}, false);
@@ -152,25 +152,32 @@ void autonSkills() {
   mogoClamp.retract();
 
   lift_motor.move(127);
-  //grab first ring
+  // grab first ring
   chassis.moveToPose(48, -48, 90, 3000, {}, false);
 
-  //grab second ring
-  // chassis.moveToPose(48, -63, 90, 2000, {}, false);
-  
-  //grab third ring
+  // grab second ring
+  //  chassis.moveToPose(48, -63, 90, 2000, {}, false);
+
+  // grab third ring
   chassis.moveToPose(60, -48, 90, 3000, {}, false);
 
-  //grab fourth one
+  // grab fourth one
   chassis.moveToPose(20, -20, -45, 3000, {}, false);
 
   pros::delay(1000);
 
-  //drop off mogo
-  chassis.moveToPose(65, -65, -45, 5000, {.forwards=false}, false);
+  // drop off mogo
+  chassis.moveToPose(65, -65, -45, 5000, {.forwards = false}, false);
   mogoClamp.extend();
+  lift_motor.brake();
 
-  chassis.moveToPose(48, 0, 0, 2000);
+  chassis.moveToPose(48, 0, 0, 2000, {}, true);
+
+  chassis.moveToPose(48, 24, -45, 5000, {}, true);
+  chassis.moveToPose(24, 60, 90, 3000, {}, true);
+  chassis.moveToPose(72, 72, 90, 3000, {}, true);
+
+  chassis.moveToPose(60, 60, 45, 3000, {.forwards = false}, true);
 }
 
 void autonomous() {
@@ -182,12 +189,56 @@ void autonomous() {
   if (isSkills) {
     autonSkills();
   } else if (isRed && hasExtraMogo) {
+    // preload red ring, put robot right behind mogo
+    //  Get mogo and score a ring
+    chassis.setPose(0, 12, 180);
+    chassis.moveToPose(0, 48, 180, 3000, {.forwards = false}, false);
+    chassis.moveToPose(0, 52, 180, 1000, {.forwards = false}, false);
+    mogoClamp.toggle(); // grab
+    lift_motor.move(127);
 
-  } else if (isRed && !hasExtraMogo) {
-    // Do first. Move forward, put lady brown to score, then grab mogo
+    chassis.moveToPose(20, 48, -90, 2000, {}, false);
+    pros::delay(2000);
+    chassis.turnToHeading(-90, 2000, {}, false);
+    mogoClamp.toggle(); // let go
+    chassis.moveToPose(-24, 48, -90, 3000, {}, false);
+
   } else if (!isRed && hasExtraMogo) {
+    // preload red ring, put robot right behind mogo
+    // this is the same as
+    chassis.setPose(0, 12, 180);
+    chassis.moveToPose(0, 48, 180, 3000, {.forwards = false}, true);
+    chassis.moveToPose(0, 52, 180, 1000, {.forwards = false}, true);
+    mogoClamp.toggle(); // grab
 
+    lift_motor.move(127);
+    chassis.moveToPose(-28, 48, -90, 2000, {}, false);
+    pros::delay(2000);
+    chassis.turnToHeading(90, 2000);
+    mogoClamp.toggle(); // let go
+    chassis.moveToPose(24, 48, 90, 3000, {}, true);
+  } else if (isRed && !hasExtraMogo) {
+    // Face blue ring, intake it, score alliance
+    // then grab mogo and score!
+    chassis.setPose(-24, 12, 90);
+    lift_motor.move(127);
+
+    chassis.moveToPose(0, 12, 90, 3000, {}, false);
+    chassis.turnToHeading(0, 3000, {}, false);
+    ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    goToAngle(210);
+    resetLadyBrown();
   } else if (!isRed && !hasExtraMogo) {
+    // Face blue ring, intake it, score alliance
+    // then grab mogo and score!
+    chassis.setPose(-24, 12, 90);
+    lift_motor.move(127);
+
+    chassis.moveToPose(0, 12, 90, 3000, {}, false);
+    chassis.turnToHeading(0, 3000, {}, false);
+    ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    goToAngle(210);
+    resetLadyBrown();
   }
 }
 
@@ -242,24 +293,21 @@ void opcontrol() {
       ladyBrownMotor.brake();
     }
 
-    if (isAPressed)
+    if (isAPressed) {
       isArmingLadyBrown = true;
+      ladyBrownMotor.move(-127);
+      pros::delay(500);
+      ladyBrownRotation.reset_position();
+    }
 
     if (isArmingLadyBrown) {
       // Angle varies, need to add mini angle adjustor
-      if (getAngle() <= 57)
-        ladyBrownMotor.move(30);
+      if (getAngle() <= 54)
+        ladyBrownMotor.move(40);
       else {
         ladyBrownMotor.brake();
         isArmingLadyBrown = false;
       }
-    }
-
-    // quick, dirty way to reset Lady Brown
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-      ladyBrownMotor.move(-127);
-      pros::delay(1000);
-      ladyBrownRotation.reset_position();
     }
 
     if (isSkills) {
