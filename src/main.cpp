@@ -89,6 +89,7 @@ void goToAngle(float angle) {
 }
 
 void autonSkills() {
+  chassis.calibrate(true);
   ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   goToAngle(210);
   resetLadyBrown();
@@ -110,42 +111,66 @@ void autonSkills() {
 
   // Grab first ring
   lift_motor.move(127);
-  chassis.moveToPose(-24, -28, 0, 2000, {}, false);
+  chassis.moveToPose(-24, -28, 0, 3000, {}, false);
 
   // Grab second ring
-  chassis.moveToPose(-48, -24, -90, 3000, {}, false);
+  chassis.moveToPose(-50, -28, -90, 3000, {}, false);
 
   // Third and fouth ring
   chassis.moveToPose(-48, -50, 180, 5000, {.maxSpeed = 40}, false);
   pros::delay(2000);
-  chassis.moveToPoint(-48, -55, 1000);
+  chassis.moveToPoint(-48, -58, 1000);
 
+  pros::delay(500);
   // back up and grab final ring
-  chassis.moveToPose(-48, -24, 180, 3000, {.forwards = false}, false);
-  pros::delay(1000);
+  chassis.moveToPose(-42, -24, 180, 3000, {.forwards = false}, false);
   chassis.moveToPose(-60, -48, 180, 3000, {}, false);
 
+  pros::delay(1000);
   //drop mobile goal off in corner
   chassis.moveToPose(-65, -65, 45, 3000, {.forwards = false}, false);
   mogoClamp.extend();
+  lift_motor.brake();
 
   // back up, slam into wall and reset X
-  chassis.moveToPoint(-48, -48, 3000, {}, false);
-  chassis.moveToPose(-1000, -48, 90, 2000, {.forwards = false}, false);
-  chassis.setPose(-62, chassis.getPose().y, 90);
+  chassis.moveToPoint(-44, -44, 3000, {}, false);
+  // chassis.moveToPose(-1000, -48, 90, 2000, {.forwards = false}, false);
+  // chassis.setPose(-62, chassis.getPose().y, 90);
 
   pros::delay(1000);
 
   // // stop, slam into wall to reset y
   // chassis.moveToPose(-24, -55, -90, 5000, {.forwards = false}, false);
   // chassis.moveToPose(-24, -1000, 180, 5000, {}, false);
-  // chassis.setPose(chassis.getPose().x, -62, 90);
+  chassis.setPose(chassis.getPose().x+2, chassis.getPose().y -4, 90);
 
   //go back and try to grab mogo
   chassis.moveToPose(-24, -48, -90, 5000, {.forwards = false}, false);
   chassis.moveToPose(0, -48, -90, 5000, {.forwards = false}, false);
-  chassis.moveToPose(24, -48, -90, 5000, {.forwards = false}, false);
+  chassis.moveToPose(24, -48, -90, 2000, {.forwards = false}, false);
+  chassis.moveToPose(30, -48, -90, 2000, {.forwards = false}, false);
   mogoClamp.retract();
+
+  lift_motor.move(127);
+  //grab first ring
+  chassis.moveToPose(48, -48, 90, 3000, {}, false);
+
+  //grab second ring
+  // chassis.moveToPose(48, -63, 90, 2000, {}, false);
+  
+  //grab third ring
+  chassis.moveToPose(60, -48, 90, 3000, {}, false);
+
+  //grab fourth one
+  chassis.moveToPose(20, -20, -45, 3000, {}, false);
+
+  pros::delay(1000);
+
+  //drop off mogo
+  chassis.moveToPose(65, -65, -45, 5000, {.forwards=false}, false);
+  mogoClamp.extend();
+
+  chassis.moveToPose(48, 0, 0, 2000);
 }
 
 void autonomous() {

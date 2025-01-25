@@ -24,7 +24,7 @@ lemlib::Drivetrain
     );
 
 // create the imu
-pros::Imu imu(16);
+pros::Imu imu(15);
 
 // horizontal tracking wheel encoder
 pros::adi::Encoder horizontal_encoder('A', 'B');
