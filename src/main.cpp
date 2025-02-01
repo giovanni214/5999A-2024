@@ -12,8 +12,8 @@
 #include <sys/types.h>
 
 bool isRed = true;
-bool hasExtraMogo = false;
-bool isSkills = true;
+bool hasExtraMogo = true;
+bool isSkills = false;
 
 void switchTeams() { isRed = !isRed; }
 
@@ -88,96 +88,219 @@ void goToAngle(float angle) {
   ladyBrownMotor.brake();
 }
 
+// void autonSkills() {
+//   chassis.calibrate(true);
+//   ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+//   goToAngle(210);
+//   resetLadyBrown();
+
+//   // facing the alliance stake, (0, 0) is center
+//   chassis.setPose(0, -60, 180);
+
+//   // grab mogo
+//   chassis.moveToPose(
+//       -20, -52, 90, 10000,
+//       {.forwards = false, .lead = 0.8, .minSpeed = 50, .earlyExitRange = 1},
+//       false);
+
+//   pros::delay(1000);
+
+//   chassis.moveToPose(-36, -50, 90, 3000, {.forwards = false, .maxSpeed = 50},
+//                      false);
+//   mogoClamp.retract();
+
+//   // Grab first ring
+//   lift_motor.move(127);
+//   chassis.moveToPose(-24, -28, 0, 3000, {}, false);
+
+//   // Grab second ring
+//   chassis.moveToPose(-50, -28, -90, 3000, {}, false);
+
+//   // Third and fouth ring
+//   chassis.moveToPose(-48, -50, 180, 5000, {.maxSpeed = 40}, false);
+//   pros::delay(2000);
+//   chassis.moveToPose(-48, -58, 180, 1000, {.maxSpeed=60}, false);
+
+//   pros::delay(500);
+//   // back up and grab final ring
+//   chassis.moveToPose(-42, -24, 180, 3000, {.forwards = false, .maxSpeed=50},
+//   false); chassis.moveToPose(-60, -48, 180, 3000, {.maxSpeed=50}, false);
+
+//   pros::delay(1000);
+//   // drop mobile goal off in corner
+//   chassis.moveToPose(-65, -73, 45, 3000, {.forwards = false, .maxSpeed=40},
+//   false); mogoClamp.extend(); lift_motor.brake();
+
+//   //works perfect above
+
+//   // back up, slam into wall and reset X
+//   chassis.moveToPose(-44, -44, -90, 3000, {.maxSpeed=50}, false);
+//   // chassis.moveToPose(-1000, -48, 90, 2000, {.forwards = false}, false);
+//   // chassis.setPose(-62, chassis.getPose().y, 90);
+
+//   pros::delay(1000);
+
+//   // // stop, slam into wall to reset y
+//   // chassis.moveToPose(-24, -55, -90, 5000, {.forwards = false}, false);
+//   // chassis.moveToPose(-24, -1000, 180, 5000, {}, false);
+//   // chassis.setPose(chassis.getPose().x + 2, chassis.getPose().y - 4, 90);
+
+//   // go back and try to grab mogo
+//   chassis.moveToPose(-24, -55, -90, 5000, {.forwards = false}, false);
+//   chassis.moveToPose(0, -55, -90, 5000, {.forwards = false}, false);
+//   chassis.moveToPose(24, -55, -90, 2000, {.forwards = false}, false);
+//   chassis.moveToPose(30, -55, -90, 2000, {.forwards = false, .maxSpeed=80},
+//   false); mogoClamp.retract();
+
+//   lift_motor.move(127);
+//   // grab first ring
+//   chassis.moveToPose(48, -55, 90, 3000, {.maxSpeed=40}, false);
+
+//   // grab second ring
+//   //  chassis.moveToPose(48, -63, 90, 2000, {}, false);
+
+//   // grab third ring
+//   chassis.moveToPose(55, -55, 90, 3000, {.maxSpeed=55}, false);
+
+//   // grab fourth one
+//   chassis.moveToPose(20, -27, -45, 3000, {.maxSpeed=60}, false);
+
+//   pros::delay(1000);
+
+//   // drop off mogo
+//   chassis.moveToPose(70, -72, -45, 5000, {.forwards = false}, false);
+//   mogoClamp.extend();
+//   lift_motor.brake();
+
+//   pros::delay(1000);
+
+//   chassis.moveToPose(48, 0, 0, 2000, {}, false);
+
+//   chassis.moveToPose(48, 24, -45, 5000, {}, false);
+//   chassis.moveToPose(24, 60, 90, 3000, {}, false);
+//   chassis.moveToPose(72, 72, 90, 3000, {}, false);
+
+//   chassis.moveToPose(60, 60, 45, 3000, {.forwards = false}, false);
+// }
+
 void autonSkills() {
-  chassis.calibrate(true);
+  // facing the alliance stake, (0, 0) is center
+  chassis.setPose(0, -57, 180);
+
+  // score alliance ring
   ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   goToAngle(210);
   resetLadyBrown();
 
-  // facing the alliance stake, (0, 0) is center
-  chassis.setPose(0, -60, 180);
+  // drive in front of mogo
+  chassis.moveToPose(0, -48, 180, 3000, {.forwards = false}, false);
+  chassis.turnToHeading(90, 2000, {.maxSpeed = 50}, false);
 
-  // grab mogo
-  chassis.moveToPose(
-      -20, -52, 90, 10000,
-      {.forwards = false, .lead = 0.8, .minSpeed = 50, .earlyExitRange = 1},
-      false);
-
-  pros::delay(1000);
-
-  chassis.moveToPose(-36, -50, 90, 3000, {.forwards = false, .minSpeed = 80},
-                     false);
-  mogoClamp.retract();
-
-  // Grab first ring
-  lift_motor.move(127);
-  chassis.moveToPose(-24, -28, 0, 3000, {}, false);
-
-  // Grab second ring
-  chassis.moveToPose(-50, -28, -90, 3000, {}, false);
-
-  // Third and fouth ring
-  chassis.moveToPose(-48, -50, 180, 5000, {.maxSpeed = 40}, false);
-  pros::delay(2000);
-  chassis.moveToPoint(-48, -58, 1000);
-
-  pros::delay(500);
-  // back up and grab final ring
-  chassis.moveToPose(-42, -24, 180, 3000, {.forwards = false}, false);
-  chassis.moveToPose(-60, -48, 180, 3000, {}, false);
-
-  pros::delay(1000);
-  // drop mobile goal off in corner
-  chassis.moveToPose(-65, -65, 45, 3000, {.forwards = false}, false);
+  // grab the mogo
   mogoClamp.extend();
-  lift_motor.brake();
+  chassis.moveToPose(-24, -48, 90, 1000, {.forwards = false}, false);
+  mogoClamp.toggle();
 
-  // back up, slam into wall and reset X
-  chassis.moveToPoint(-44, -44, 3000, {}, false);
-  // chassis.moveToPose(-1000, -48, 90, 2000, {.forwards = false}, false);
-  // chassis.setPose(-62, chassis.getPose().y, 90);
-
-  pros::delay(1000);
-
-  // // stop, slam into wall to reset y
-  // chassis.moveToPose(-24, -55, -90, 5000, {.forwards = false}, false);
-  // chassis.moveToPose(-24, -1000, 180, 5000, {}, false);
-  chassis.setPose(chassis.getPose().x + 2, chassis.getPose().y - 4, 90);
-
-  // go back and try to grab mogo
-  chassis.moveToPose(-24, -48, -90, 5000, {.forwards = false}, false);
-  chassis.moveToPose(0, -48, -90, 5000, {.forwards = false}, false);
-  chassis.moveToPose(24, -48, -90, 2000, {.forwards = false}, false);
-  chassis.moveToPose(30, -48, -90, 2000, {.forwards = false}, false);
-  mogoClamp.retract();
-
+  // start intake
   lift_motor.move(127);
+
   // grab first ring
-  chassis.moveToPose(48, -48, 90, 3000, {}, false);
+  chassis.turnToHeading(0, 1000, {}, false);
+  chassis.moveToPose(-24, -24, 0, 2000, {}, false);
 
   // grab second ring
-  //  chassis.moveToPose(48, -63, 90, 2000, {}, false);
+  chassis.turnToHeading(-90, 1000, {}, false);
+  chassis.moveToPose(-45, -24, -90, 3000, {}, false);
 
   // grab third ring
-  chassis.moveToPose(60, -48, 90, 3000, {}, false);
-
-  // grab fourth one
-  chassis.moveToPose(20, -20, -45, 3000, {}, false);
+  chassis.turnToHeading(180, 1000, {}, false);
+  chassis.moveToPose(-48, -45, 180, 3000, {}, false);
 
   pros::delay(1000);
 
-  // drop off mogo
-  chassis.moveToPose(65, -65, -45, 5000, {.forwards = false}, false);
-  mogoClamp.extend();
+  // grab fourth ring
+  chassis.moveToPose(-48, -60, 180, 2000, {}, false);
+
+  // back up to prepare for final ring grab
+  chassis.moveToPose(-48, -24, 180, 3000, {.forwards = false}, false);
+
+  // drive and grab last ring
+  chassis.turnToHeading(206.5, 1000, {}, false); // angled directly to last ring
+  chassis.moveToPose(-60, -48, 206.5, 3000, {}, false);
+
+  // turn around and to drop mogo off
+  chassis.turnToHeading(45, 1000, {}, false);
+
+  // drop off mogo in corner
+  chassis.moveToPose(-65, -65, 45, 3000, {.forwards = false}, false);
+  mogoClamp.toggle();
   lift_motor.brake();
 
-  chassis.moveToPose(48, 0, 0, 2000, {}, true);
+  // get out of the way and turn towards other mogo
+  chassis.moveToPose(-48, -48, 45, 3000, {}, false);
+  chassis.turnToHeading(-90, 1000, {}, false);
 
-  chassis.moveToPose(48, 24, -45, 5000, {}, true);
-  chassis.moveToPose(24, 60, 90, 3000, {}, true);
-  chassis.moveToPose(72, 72, 90, 3000, {}, true);
+  // drive to mogo
+  chassis.moveToPose(-24, -48, 45, 1000, {}, false);
+  chassis.moveToPose(0, -48, 45, 1000, {}, false);
+  chassis.moveToPose(12, -48, 45, 1000, {}, false);
+  chassis.moveToPose(24, -48, 45, 1000, {}, false);
 
-  chassis.moveToPose(60, 60, 45, 3000, {.forwards = false}, true);
+  // grab mogo
+  mogoClamp.toggle();
+  lift_motor.move(127);
+
+  // get 2nd mogo 1st ring
+  chassis.turnToHeading(0, 1000, {}, false);
+  chassis.moveToPose(24, -24, 0, 1000, {}, false);
+
+  // get 2nd mogo 2nd ring
+  chassis.turnToHeading(90, 1000, {}, false);
+  chassis.moveToPose(48, -24, 90, 1000, {}, false);
+
+  // get 2nd mogo 3rd ring
+  chassis.turnToHeading(180, 1000, {}, false);
+  chassis.moveToPose(48, -45, 180, 3000, {}, false);
+
+  pros::delay(1500);
+
+  // grab fourth ring (2nd mogo)
+  chassis.moveToPose(48, -60, 180, 2000, {}, false);
+
+  // back up to prepare for final ring grab
+  chassis.moveToPose(48, -24, 180, 3000, {.forwards = false}, false);
+
+  // drive and grab last ring
+  chassis.turnToHeading(153.4, 1000, {}, false); // angled directly to last ring
+  chassis.moveToPose(60, -48, 153.4, 3000, {}, false);
+  // // drive forward to get mobile goal
+  // chassis.moveToPose(-48, -24, 180, 3000, {.forwards = false}, false);
+  // chassis.moveToPose(-48, 0, 180, 3000, {.forwards = false}, false);
+  // chassis.moveToPose(-48, 24, 180, 3000, {.forwards = false}, false);
+  // chassis.moveToPose(-48, 36, 180, 3000, {.forwards = false}, false);
+  // chassis.turnToHeading(225, 2000, {}, false);
+
+  // // go and grab mobile goal
+  // chassis.moveToPose(-24, 60, 225, 2000, {.forwards = false}, false);
+  // mogoClamp.toggle();
+
+  // // turn to push mobile goal into corner
+  // chassis.turnToHeading(90, 1000, {}, false);
+
+  // // drop off mogo
+  // chassis.moveToPose(-80, 60, 90, 3000, {.forwards = false}, false);
+  // mogoClamp.toggle();
+
+  // // push other mogo in corner (in small steps to ensure accuracy)
+  // chassis.moveToPose(-50, 60, 90, 3000, {.forwards = false}, false);
+  // chassis.moveToPose(-30, 60, 90, 1000, {}, false);
+  // chassis.moveToPose(0, 60, 90, 1000, {}, false);
+  // chassis.moveToPose(30, 60, 90, 1000, {}, false);
+  // chassis.moveToPose(60, 60, 90, 1000, {}, false);
+  // chassis.moveToPose(80, 60, 90, 1000, {}, false);
+
+  // // back up from corner
+  //  chassis.moveToPose(0, 0, 180, 3000);
 }
 
 void autonomous() {
@@ -202,10 +325,8 @@ void autonomous() {
     chassis.turnToHeading(-90, 2000, {}, false);
     mogoClamp.toggle(); // let go
     chassis.moveToPose(-24, 48, -90, 3000, {}, false);
-
   } else if (!isRed && hasExtraMogo) {
-    // preload red ring, put robot right behind mogo
-    // this is the same as
+    // preload blue ring, put robot right behind mogo
     chassis.setPose(0, 12, 180);
     chassis.moveToPose(0, 48, 180, 3000, {.forwards = false}, true);
     chassis.moveToPose(0, 52, 180, 1000, {.forwards = false}, true);
@@ -218,27 +339,30 @@ void autonomous() {
     mogoClamp.toggle(); // let go
     chassis.moveToPose(24, 48, 90, 3000, {}, true);
   } else if (isRed && !hasExtraMogo) {
-    // Face blue ring, intake it, score alliance
-    // then grab mogo and score!
-    chassis.setPose(-24, 12, 90);
-    lift_motor.move(127);
+    // preload red ring, put robot right behind mogo
+    chassis.setPose(0, 12, 180);
+    chassis.moveToPose(0, 48, 180, 3000, {.forwards = false}, true);
+    chassis.moveToPose(0, 52, 180, 1000, {.forwards = false}, true);
+    mogoClamp.toggle(); // grab
 
-    chassis.moveToPose(0, 12, 90, 3000, {}, false);
-    chassis.turnToHeading(0, 3000, {}, false);
-    ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-    goToAngle(210);
-    resetLadyBrown();
+    lift_motor.move(127);
+    chassis.moveToPose(-28, 48, -90, 2000, {}, false);
+    pros::delay(2000);
+    chassis.turnToHeading(90, 2000);
+    mogoClamp.toggle(); // let go
   } else if (!isRed && !hasExtraMogo) {
-    // Face blue ring, intake it, score alliance
-    // then grab mogo and score!
-    chassis.setPose(-24, 12, 90);
+    // preload blue ring, put robot right behind mogo
+    chassis.setPose(0, 12, 180);
+    chassis.moveToPose(0, 48, 180, 3000, {.forwards = false}, false);
+    chassis.moveToPose(0, 52, 180, 1000, {.forwards = false}, false);
+    mogoClamp.toggle(); // grab
     lift_motor.move(127);
 
-    chassis.moveToPose(0, 12, 90, 3000, {}, false);
-    chassis.turnToHeading(0, 3000, {}, false);
-    ladyBrownMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-    goToAngle(210);
-    resetLadyBrown();
+    chassis.moveToPose(20, 48, -90, 2000, {}, false);
+    pros::delay(2000);
+    chassis.turnToHeading(-90, 2000, {}, false);
+    mogoClamp.toggle(); // let go
+    chassis.moveToPose(-24, 48, -90, 3000, {}, false);
   }
 }
 
@@ -296,13 +420,17 @@ void opcontrol() {
     if (isAPressed) {
       isArmingLadyBrown = true;
       ladyBrownMotor.move(-127);
-      pros::delay(500);
+      pros::delay(250);
       ladyBrownRotation.reset_position();
+    }
+
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+      ladyBrownMotor.move(-127);
     }
 
     if (isArmingLadyBrown) {
       // Angle varies, need to add mini angle adjustor
-      if (getAngle() <= 54)
+      if (getAngle() <= 60)
         ladyBrownMotor.move(40);
       else {
         ladyBrownMotor.brake();

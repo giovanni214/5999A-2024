@@ -47,24 +47,3 @@ int getRingColor(pros::Optical& optical_sensor) {
 float centiToDegrees(int centidegrees) {
   return (float) centidegrees / 100;
 }
-
-/*
-optical_sensor.set_led_pwm(100);
-  
-  lift.move(127);
-  //lift.move(127);
-  while(true) {
-    int color = getRingColor();
-    pros::lcd::print(5, "Color: %d", color);
-
-    if(color == 1) {
-      pros:pros::c::delay(70);
-      lift.brake();
-      pros::delay(1000);
-
-      lift.move(127);
-    }
-    
-    pros::delay(20);
-	}
-*/
