@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "5999A-but-better",
+    "project_name": "5999A-states",
     "target": "v5",
     "templates": {
       "LemLib": {

@@ -407,6 +407,7 @@ void opcontrol() {
 
     // move lift based off of right triggers
     lift_motor.move(127 * (isR2Pressed - isR1Pressed));
+    intake_motor.move(127 * (isR2Pressed - isR1Pressed));
 
     // Control for Lady Brown mech, could change if a better one is found
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {

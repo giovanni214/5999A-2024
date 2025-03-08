@@ -1,4 +1,5 @@
 #include "lemlib/chassis/chassis.hpp"
+#include "pros/abstract_motor.hpp"
 #include "pros/adi.hpp"
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
@@ -10,8 +11,9 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // Creates a motor group with forwards
-pros::MotorGroup left_mg({-1, -4, -3}, pros::MotorGearset::blue);
-pros::MotorGroup right_mg({11, 12, 13}, pros::MotorGearset::blue);
+//starting from back 
+pros::MotorGroup left_mg({-8, 9, -10}, pros::MotorGearset::blue);
+pros::MotorGroup right_mg({15, -3, 2}, pros::MotorGearset::blue);
 
 // drivetrain settings
 lemlib::Drivetrain
@@ -23,14 +25,14 @@ lemlib::Drivetrain
                2                           // horizontal drift is 2 (for now)
     );
 
-// create the imu
-pros::Imu imu(15);
+// create the imu (inertial sensor)
+pros::Imu imu(12);
 
 // horizontal tracking wheel encoder
-pros::adi::Encoder horizontal_encoder('A', 'B');
+pros::adi::Encoder horizontal_encoder('C', 'D');
 
 // vertical tracking wheel encoder
-pros::adi::Encoder vertical_encoder('C', 'D');
+pros::adi::Encoder vertical_encoder('A', 'B');
 
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder,
@@ -84,7 +86,8 @@ lemlib::Chassis chassis(drivetrain,         // drivetrain settings
 
 pros::adi::Pneumatics mogoClamp('H', true);
 pros::adi::Pneumatics doinker('F', false);
+pros::Motor intake_motor(-20, pros::v5::MotorGears::green);
 pros::Motor lift_motor(-7, pros::v5::MotorGears::blue);
-pros::Rotation ladyBrownRotation(21);
-pros::Motor ladyBrownMotor(-10, pros::MotorGearset::red);
+pros::Rotation ladyBrownRotation(18);
+pros::Motor ladyBrownMotor(21, pros::MotorGearset::green);
 pros::Optical optical_sensor(6);
