@@ -88,6 +88,6 @@ pros::adi::Pneumatics mogoClamp('H', true);
 pros::adi::Pneumatics doinker('F', false);
 pros::Motor intake_motor(-20, pros::v5::MotorGears::green);
 pros::Motor lift_motor(-7, pros::v5::MotorGears::blue);
-pros::Rotation ladyBrownRotation(18);
+pros::Rotation ladyBrownRotation(-18);
 pros::Motor ladyBrownMotor(21, pros::MotorGearset::green);
-pros::Optical optical_sensor(6);
+pros::Optical optical_sensor(19);
