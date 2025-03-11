@@ -36,10 +36,10 @@ pros::adi::Encoder vertical_encoder('A', 'B');
 
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder,
-                                                lemlib::Omniwheel::NEW_275, 2);
+                                                lemlib::Omniwheel::NEW_275, 1);
 // vertical tracking wheel
 lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder,
-                                              lemlib::Omniwheel::NEW_275, 2);
+                                              lemlib::Omniwheel::NEW_275, 1.75);
 
 // setup the full tracking sensors
 lemlib::OdomSensors sensors(
@@ -53,25 +53,25 @@ lemlib::OdomSensors sensors(
 
 // lateral (moving) PID controller
 lemlib::ControllerSettings
-    lateral_controller(10,  // proportional gain (kP)
+    lateral_controller(14,  // proportional gain (kP)
                        0,   // integral gain (kI)
-                       3,   // derivative gain (kD)
+                       6,   // derivative gain (kD)
                        3,   // anti windup
                        1,   // small error range, in inches
                        1,   // small error range timeout, in milliseconds
                        100, // large error range, in inches
                        500, // large error range timeout, in milliseconds
-                       20   // maximum acceleration (slew)
+                       0   // maximum acceleration (slew)
     );
 
 // angular (turning) PID controller
 lemlib::ControllerSettings
-    angular_controller(2,   // proportional gain (kP)
+    angular_controller(2.6,   // proportional gain (kP)
                        0,   // integral gain (kI)
-                       10,  // derivative gain (kD)
+                       8,  // derivative gain (kD)
                        3,   // anti windup
                        1,   // small error range, in degrees
-                       100, // small error range timeout, in milliseconds
+                       200, // small error range timeout, in milliseconds
                        3,   // large error range, in degrees
                        500, // large error range timeout, in milliseconds
                        0    // maximum acceleration (slew)
@@ -84,10 +84,10 @@ lemlib::Chassis chassis(drivetrain,         // drivetrain settings
                         sensors             // odometry sensors
 );
 
-pros::adi::Pneumatics mogoClamp('H', true);
+pros::adi::Pneumatics mogoClamp('H', false);
 pros::adi::Pneumatics doinker('F', false);
 pros::Motor intake_motor(-20, pros::v5::MotorGears::green);
 pros::Motor lift_motor(-7, pros::v5::MotorGears::blue);
 pros::Rotation ladyBrownRotation(-18);
-pros::Motor ladyBrownMotor(21, pros::MotorGearset::green);
+pros::Motor ladyBrownMotor(-21, pros::MotorGearset::green);
 pros::Optical optical_sensor(19);

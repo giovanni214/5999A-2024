@@ -13,5 +13,8 @@ void hslToRGB(float h, float s, float l, float& r, float& g, float& b);
 int getRingColor(pros::Optical& optical_sensor);
 
 float centiToDegrees(int centidegrees);
+float getAngle();
+void resetLadyBrown();
+void goToAngle(float angle);
 
 #endif

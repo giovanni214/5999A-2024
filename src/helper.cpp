@@ -1,5 +1,6 @@
 #include "pros/optical.hpp"
 #include <cmath>
+#include "config.h"
 
 // Helper function to convert hue to RGB
 double hueToRgb(double p, double q, double t) {
@@ -46,4 +47,25 @@ int getRingColor(pros::Optical& optical_sensor) {
 
 float centiToDegrees(int centidegrees) {
   return (float) centidegrees / 100;
+}
+
+float getAngle() {
+  float angle = centiToDegrees(ladyBrownRotation.get_position());
+  return angle / 5;
+}
+
+void resetLadyBrown() {
+  ladyBrownMotor.move(-127);
+  pros::delay(1000);
+  ladyBrownMotor.brake();
+  ladyBrownRotation.reset_position();
+}
+
+void goToAngle(float angle) {
+  ladyBrownMotor.move(160);
+  while (getAngle() < angle) {
+    pros::delay(5);
+  }
+
+  ladyBrownMotor.brake();
 }
