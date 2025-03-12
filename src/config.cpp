@@ -22,7 +22,7 @@ lemlib::Drivetrain
                13,                         // 13 inch track width
                lemlib::Omniwheel::OLD_325, // using old 3.25" omnis
                450,                        // drivetrain rpm is 450
-               2                           // horizontal drift is 2 (for now)
+               1                           // horizontal drift is 2 (for now)
     );
 
 // create the imu (inertial sensor)
@@ -36,7 +36,7 @@ pros::adi::Encoder vertical_encoder('A', 'B');
 
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder,
-                                                lemlib::Omniwheel::NEW_275, 1);
+                                                lemlib::Omniwheel::NEW_275, 1.25);
 // vertical tracking wheel
 lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder,
                                               lemlib::Omniwheel::NEW_275, 1.75);
